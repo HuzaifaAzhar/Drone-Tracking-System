@@ -1,0 +1,1 @@
+Drone Tracking System with extensive features such as separate roles for Admin, Operator and Manager using Custom Authentication Service via session storage. Live drone tracking via Google Maps API. Geofencing using coordinates and an option to disable drone and make it return to homebase.
