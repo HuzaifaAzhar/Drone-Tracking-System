@@ -1,0 +1,171 @@
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager nm
+<PageTitle>Dashboard</PageTitle>
+
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <!-- Left navbar links -->
+        <ul class="navbar-nav">
+           
+           
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="#" class="nav-link">Drone Tracking</a>
+            </li>
+        </ul>
+
+        <!-- Right navbar links -->
+      
+    </nav>
+    <!-- /.navbar -->
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
+        <a href="index3.html" class="brand-link">
+            <img src="favicon.png" alt="" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <span class="brand-text font-weight-light" style="text-decoration:none;">Air Tech Janis</span>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar user panel (optional) -->
+           
+
+         
+
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <!-- Add icons to the links using the .nav-icon class
+                         with font-awesome or any other icon font library -->
+               
+                    <li class="nav-item menu-open">
+
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                Pages
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <AuthorizeView Roles="Manager">
+                                <Authorized>
+                                    <li class="nav-item">
+                                        <a href="/manager" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>manager</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/geofence" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Geo Fencing</p>
+                                        </a>
+                                    </li>
+                                </Authorized>
+
+                            </AuthorizeView>
+                            <AuthorizeView Roles="Operator">
+                                <Authorized>
+                                    <li class="nav-item">
+                                        <a href="/shipmentdetails" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Operator</p>
+                                        </a>
+                                    </li>
+                                </Authorized>
+
+                            </AuthorizeView>
+                            <AuthorizeView Roles="Admin">
+                                <Authorized>
+                                    <li class="nav-item">
+                                        <a href="/admin" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Admin</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/disable" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Drone Disable</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/geofence" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Geo Fencing</p>
+                                        </a>
+                                    </li>
+                                </Authorized>
+
+                            </AuthorizeView>
+
+
+                            <AuthorizeView>
+                                <NotAuthorized>
+
+                                    <li class="nav-item">
+                                        <a href="/login" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Login</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/register" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Register</p>
+                                        </a>
+                                    </li>
+                                </NotAuthorized>
+                                <Authorized>
+<li class="nav-item">
+                                        <a @onclick="logout" href="javascript:void(0)" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Logout</p>
+                                        </a>
+                                    </li>
+                                </Authorized>
+                            </AuthorizeView>
+                        </ul>
+                    </li>
+
+
+
+
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        @Body
+    </div>
+    <!-- /.content-wrapper -->
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <strong>Copyright &copy; 2024 <a href="https://technocrats.tech">Air Tech Janis</a>.</strong>
+        All rights reserved.
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 1.0.0
+        </div>
+    </footer>
+</div>
+@code{
+    private async Task logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        nm.NavigateTo("/login", true);
+    }
+}

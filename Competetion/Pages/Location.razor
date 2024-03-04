@@ -1,0 +1,27 @@
+@page "/map/{fromloc}/{toloc}"
+@inject IJSRuntime jsInvoker
+
+<h1>Display Google Map</h1>
+<div id="map" style="height:500px;width:100%;">
+</div>
+<a id="sidebar" style="display: block"></a>
+<a id="sidebar1" style="display: block"></a>
+<a id="sidebar2" style="display: block"></a>
+@code {
+    [Parameter]
+    public string? fromloc { get; set; }
+    [Parameter]
+    public string? toloc { get; set; }
+    private IJSObjectReference? jsModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await jsInvoker.InvokeAsync<IJSObjectReference>("import", "./map.js");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+        await jsModule.InvokeVoidAsync("initializemap");
+        await jsModule.InvokeVoidAsync("calcRoute",fromloc,toloc);
+    }
+}

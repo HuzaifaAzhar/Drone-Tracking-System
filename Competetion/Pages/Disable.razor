@@ -1,0 +1,110 @@
+﻿@page "/disable"
+@inject NavigationManager nm
+
+<h3>Disable Drones</h3>
+<div class="card">
+    @*    <div class="card-header">
+    <h3 class="card-title">DataTable with default features</h3>
+    </div> *@
+    <!-- /.card-header -->
+    <div class="card-body">
+
+        <div class="table-responsive">
+            <table id="myTable" class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+
+                        <th>Shipment Id</th>
+                        <th>Drone_Name</th>
+                        <th>Shipment_Weight</th>
+                        <th>Drone_Location</th>
+                        <th>Shipment_To</th>
+                        <th>Shipment_Date</th>
+                        <th>ShipmentStatus</th>
+                        <th>Action</th>
+                        <th>Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (DataRow row in dt.Rows)
+                    {
+                        <tr>
+                            <td>@row["ShipmentID"]</td>
+                            <td>@row["Drone_Name"]</td>
+                            <td>@row["Shipment_Weight"]</td>
+                            <td>@row["Drone_Location"]</td>
+                            <td>@row["Shipment_To"]</td>
+                            <td>@row["Shipment_Date"]</td>
+                            <td>@row["ShipmentStatus"]</td>
+                            <td>
+                                <button onclick="@(() => disableDrone((@row["ShipmentID"].ToString())))">Disable</button>
+                             </td>
+                            <td>
+                                <button onclick="@(() => redirectDrone((@row["ShipmentID"].ToString())))">RedirectHome</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+
+                    @*  <tr>
+                    <td colspan="10">
+                    <Pagination PI="pagingInfo" PageClassesEnabled="true" PageClass="Paging" PageClassSelected="active"></Pagination>
+                    </td>
+                    </tr> *@
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+@code {
+    protected Shipment? model { get; set; } = new Shipment();
+    DataTable dt = new DataTable();
+    protected override async Task OnInitializedAsync()
+    {
+
+        dt = await DALCRUD.ReadData("SP_GetAllShipments");
+
+    }
+    public async Task disableDrone(string id)
+    {
+        model.UserID = 0; //0 for disabled
+        int shipp = int.Parse(id);
+        SqlParameter[] sp =
+          {
+
+            new SqlParameter("@ShipmentID",shipp),
+            new SqlParameter("@Drone_Location","Disabled"),
+            new SqlParameter("@Shipment_To", "Disabled"),
+            new SqlParameter("@Drone_Name", "Disabled"),
+            new SqlParameter("@Shipment_Weight", "0"),
+            new SqlParameter("@Shipment_Date",model.Shipment_Date.ToString()),
+            new SqlParameter("@UserID",model.UserID)
+
+    };
+        await DALCRUD.CRUD("SP_UpdateShipment", sp);
+        nm.NavigateTo("/shipmentdetails", forceLoad: true);
+    }
+    public async Task redirectDrone(string id)
+    {
+        model.UserID = 0; //0 for disabled
+        int shipp = int.Parse(id);
+        SqlParameter[] sp =
+          {
+
+            new SqlParameter("@ShipmentID",shipp),
+            new SqlParameter("@Drone_Location","Redirecting"),
+            new SqlParameter("@Shipment_To", "Homebase"),
+            new SqlParameter("@Drone_Name", "Redirecting"),
+            new SqlParameter("@Shipment_Weight", "0"),
+            new SqlParameter("@Shipment_Date",model.Shipment_Date.ToString()),
+            new SqlParameter("@UserID",model.UserID)
+
+    };
+        await DALCRUD.CRUD("SP_UpdateShipment", sp);
+        nm.NavigateTo("/shipmentdetails", forceLoad: true);
+    }
+}

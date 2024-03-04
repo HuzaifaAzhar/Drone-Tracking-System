@@ -1,0 +1,96 @@
+@page "/geofence"
+
+<h3>Add Geofence</h3>
+
+<div>
+
+    <label for="coordinate1">Coordinate 1:</label>
+    <input id="coordinate1" @bind="geofence.Coordinate1" />
+
+    <label for="coordinate2">Coordinate 2:</label>
+    <input id="coordinate2" @bind="geofence.Coordinate2" />
+
+    <label for="coordinate3">Coordinate 3:</label>
+    <input id="coordinate3" @bind="geofence.Coordinate3" />
+
+    <label for="coordinate4">Coordinate 4:</label>
+    <input id="coordinate4" @bind="geofence.Coordinate4" />
+
+    <button onclick="@(() => AddGeoFence())">Add Geofence</button>
+</div>
+<div class="card">
+    @*    <div class="card-header">
+    <h3 class="card-title">DataTable with default features</h3>
+    </div> *@
+    <!-- /.card-header -->
+    <div class="card-body">
+
+        <div class="table-responsive">
+            <table id="myTable" class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Coordinate1</th>
+                        <th>Coordinate2</th>
+                        <th>Coordinate3</th>
+                        <th>Coordinate4</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (DataRow row in dt.Rows)
+                    {
+                        <tr>
+                            <td>@row["GeofenceID"]</td>
+                            <td>@row["Coordinate1"]</td>
+                            <td>@row["Coordinate2"]</td>
+                            <td>@row["Coordinate3"]</td>
+                            <td>@row["Coordinate4"]</td>     
+                            
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                        
+                
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+<a href="/shipmentdetails" class="btn btn-primary">Check Fence</a>
+
+@code {
+    private GeofenceModel geofence = new GeofenceModel();
+        DataTable dt = new DataTable();
+
+        protected override async Task OnInitializedAsync()
+    {
+        dt = await DALCRUD.ReadData("SP_GetGeofences");
+
+    }
+    public async Task AddGeoFence(){
+         {
+            SqlParameter[] sp =
+            {
+         
+            new SqlParameter("@Coordinate1",geofence.Coordinate1),
+            new SqlParameter("@Coordinate2", geofence.Coordinate2),
+            new SqlParameter("@Coordinate3", geofence.Coordinate3),
+            new SqlParameter("@Coordinate4", geofence.Coordinate4),
+            };
+            await DALCRUD.CRUD("AddGeofence", sp);
+        }
+    }
+
+    public class GeofenceModel
+    {
+        public string Name { get; set; }
+        public string Coordinate1 { get; set; }
+        public string Coordinate2 { get; set; }
+        public string Coordinate3 { get; set; }
+        public string Coordinate4 { get; set; }
+    }
+}

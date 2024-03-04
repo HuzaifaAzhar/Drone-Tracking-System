@@ -1,0 +1,117 @@
+@page "/shipmentdetails"
+<h3>ShipmentDetails</h3>
+
+
+
+
+<a href="/addnemp" class="btn btn-primary">Add Shipment Details</a>
+
+<div class="card">
+    @*    <div class="card-header">
+    <h3 class="card-title">DataTable with default features</h3>
+    </div> *@
+    <!-- /.card-header -->
+    <div class="card-body">
+        
+        <div class="table-responsive">
+            <table id="myTable" class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+
+                        <th>Shipment Id</th>
+                        <th>Drone_Name</th>
+                        <th>Shipment_Weight</th>
+                        <th>Drone_Location</th>
+                        <th>Shipment_To</th>
+                        <th>Shipment_Date</th>
+                        <th>ShipmentStatus</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (DataRow row in dt.Rows)
+                    {
+                         string droneLocation = row["Drone_Location"].ToString();
+                         //bool isInsideGeofence = CheckDroneFence(droneLocation);
+
+                        <tr>
+                            <td>@row["ShipmentID"]</td>
+                            <td>@row["Drone_Name"]</td>
+                            <td>@row["Shipment_Weight"]</td>
+
+                            <td>@row["Drone_Location"]</td>
+                            <td>@row["Shipment_To"]</td>
+                            <td>@row["Shipment_Date"]</td>
+                            <td>@row["ShipmentStatus"]</td>
+                            <td>  <a href="@($"/addnemp/{row["ShipmentID"]}")"><i class="fa-solid fa-pen-to-square"></i>Update</a></td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+
+                    @*  <tr>
+                    <td colspan="10">
+                    <Pagination PI="pagingInfo" PageClassesEnabled="true" PageClass="Paging" PageClassSelected="active"></Pagination>
+                    </td>
+                    </tr> *@
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+
+@code {
+    DataTable dt = new DataTable();
+      private GeofenceModel geofence = new GeofenceModel();
+     DataTable dt2 = new DataTable();
+    protected override async Task OnInitializedAsync()
+    {
+        dt = await DALCRUD.ReadData("SP_GetAllShipments");
+            dt2 = await DALCRUD.ReadData("SP_GetGeofences");
+       
+    }
+    public class GeofenceModel
+    {
+        public string Name { get; set; }
+        public string Coordinate1 { get; set; }
+        public string Coordinate2 { get; set; }
+        public string Coordinate3 { get; set; }
+        public string Coordinate4 { get; set; }
+    }
+     public bool CheckDroneFence(string droneLocation)
+    {
+        string[] droneCoordinates = droneLocation.Split(',');
+        double droneLongitude = double.Parse(droneCoordinates[0]);
+        double droneLatitude = double.Parse(droneCoordinates[1]);
+
+        foreach (DataRow row in dt2.Rows)
+        {
+            string geofenceCoordinates = $"{row["Coordinate1"]},{row["Coordinate2"]},{row["Coordinate3"]},{row["Coordinate4"]}";
+            string[] coordinates = geofenceCoordinates.Split(',');
+            double coordinate1Long = double.Parse(coordinates[0]);
+            double coordinate1Lat = double.Parse(coordinates[1]);
+            double coordinate2Long = double.Parse(coordinates[2]);
+            double coordinate2Lat = double.Parse(coordinates[3]);
+            double coordinate3Long = double.Parse(coordinates[4]);
+            double coordinate3Lat = double.Parse(coordinates[5]);
+            double coordinate4Long = double.Parse(coordinates[6]);
+            double coordinate4Lat = double.Parse(coordinates[7]);
+            if(droneLongitude>=coordinate1Long){
+                return true;
+            }
+            if(droneLongitude>=coordinate4Long){
+                return true;
+            }
+            if(droneLatitude>=coordinate1Lat){
+                return true;
+            }
+            if(droneLatitude>=coordinate4Lat){
+                return true;
+            }
+        }
+
+        return false; 
+    }
+}
