@@ -6,7 +6,7 @@ namespace Competetion.Data
     {
         public static SqlConnection GetConnection()
         {
-            SqlConnection con = new SqlConnection(@"Data Source =HUZAIFA\SQLEXPRESS; Initial Catalog = competetion; Integrated Security = True");
+            SqlConnection con = new SqlConnection(@"Data Source =.; Initial Catalog = competetion; Integrated Security = True");
          return con;
         }
     }
